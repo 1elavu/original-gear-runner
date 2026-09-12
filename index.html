@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0b1020">
-<title>Original Gear Runner V1.0</title>
+<title>Original Gear Runner V1.2</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:#070b16;color:#eef3ff;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100%;overflow-x:hidden}
@@ -84,12 +84,17 @@ h1{font-size:34px;line-height:1;margin:0 0 10px}
 .badge{padding:4px 7px;border-radius:8px;background:#18233b;color:#a8b8d5;font-size:10px;font-weight:900}
 .common{color:#b9c1cf}.rare{color:#52b6ff}.epic{color:#bf75ff}.legendary{color:#ffb84e}
 @media(max-height:680px){.runScene{height:39vh;min-height:260px}.screen{padding-top:2px}}
+
+.bottomNav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(100vw,520px);height:70px;background:#0b1020ee;border-top:1px solid #26324b;backdrop-filter:blur(14px);display:grid;grid-template-columns:repeat(4,1fr);z-index:9;padding-bottom:env(safe-area-inset-bottom)}
+.navBtn{border:0;background:transparent;color:#71809d;font-weight:800;font-size:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.navBtn span{font-size:20px}.navBtn.active{color:#fff}
+.charCard{padding:14px;display:flex;gap:12px;align-items:center}.charIcon{width:66px;height:66px;border-radius:18px;background:radial-gradient(circle,#354a78,#10182b);display:grid;place-items:center;font-size:35px;border:1px solid #30405f}.charCard h3{margin:0 0 4px}.charCard p{margin:0;color:#8290aa;font-size:11px;line-height:1.35}.selected{outline:2px solid #6d5dfc}
+.pvpEnemy{display:flex;align-items:center;gap:12px;padding:13px;background:#0a1120;border-radius:15px;margin:10px 0}.versus{font-size:26px;font-weight:950;text-align:center;padding:8px}
 </style>
 </head>
 <body>
 <div id="app">
   <section id="home" class="screen active">
-    <div class="top"><div class="brand">ORIGINAL GEAR RUNNER</div><div class="pill">V1.0</div></div>
+    <div class="top"><div class="brand">ORIGINAL GEAR RUNNER</div><div class="pill">V1.2</div></div>
     <div class="card homeHero">
       <div class="muted">ПЕРВЫЙ ПОЛНЫЙ ПРОТОТИП</div>
       <h1>Стань сильнее.<br>Дойди дальше.</h1>
@@ -101,7 +106,7 @@ h1{font-size:34px;line-height:1;margin:0 0 10px}
         <div class="stat"><span class="muted">Монеты</span><b id="hCoins">0</b></div>
       </div>
     </div>
-    <div class="sectionTitle">Прогресс</div>
+    <div class="sectionTitle">Герой</div><div class="card location"><div class="icon" id="heroIcon">🛡️</div><div><b id="heroName">Страж</b><small id="heroBonus">+18% к защите</small></div></div><div class="sectionTitle">Прогресс</div>
     <div class="card panel">
       <div class="row"><b id="xpText">XP 0 / 100</b><span class="badge" id="zoneBadge">Зона 1</span></div>
       <div class="progress" style="margin-top:8px"><i id="xpBar" style="width:0%"></i></div>
@@ -124,9 +129,9 @@ h1{font-size:34px;line-height:1;margin:0 0 10px}
       <div class="actor" id="actor"><div class="head"></div><div class="body"><div class="visor"></div><div class="leg l"></div><div class="leg r"></div></div></div>
       <div class="enemy" id="enemy"><div class="horn a"></div><div class="horn b"></div><div class="head"><div class="eye a"></div><div class="eye b"></div></div><div class="body"></div></div>
     </div>
-    <div class="runBottom">
+    <div class="muted" style="padding:4px 2px">Автоатака сама ведёт бой. Зелье можно использовать, когда HP снизится.</div><div class="runBottom">
       <div class="row"><div><div class="enemyName" id="enemyLabel">Разбойник</div><div class="wave" id="waveText">Волна 1 · 1/5</div></div><div class="badge">⚔️ <span id="powerRun">0</span></div></div>
-      <div class="actionRow"><button class="btn attack" id="attackBtn">АТАКА</button><button class="btn secondary" id="healBtn">ЛЕЧЕНИЕ · <span id="healCost">20</span>💰</button></div>
+      <div class="actionRow"><button class="btn attack" id="attackBtn">АВТОАТАКА: ВКЛ</button><button class="btn secondary" id="potionBtn">ЗЕЛЬЕ · <span id="potionCost">35</span>💰</button></div>
     </div>
   </section>
 
@@ -144,6 +149,51 @@ h1{font-size:34px;line-height:1;margin:0 0 10px}
     <div class="list" id="upgradeList"></div>
     <div class="sectionTitle">Экипировка</div>
     <div class="card equip"><div class="equipGrid" id="statsEquip"></div></div>
+  </section>
+
+
+  <nav class="bottomNav">
+    <button class="navBtn active" data-screen="home"><span>🏠</span>Забег</button>
+    <button class="navBtn" data-screen="pvp"><span>⚔️</span>PvP</button>
+    <button class="navBtn" data-screen="characters"><span>🧙</span>Герои</button>
+    <button class="navBtn" data-screen="shop"><span>🛒</span>Магазин</button>
+  </nav>
+
+  <section id="pvp" class="screen">
+    <div class="top"><div class="brand">PvP АРЕНА</div><div class="pill">🏆 <span id="trophies">0</span></div></div>
+    <div class="card panel">
+      <div class="muted">АСИНХРОННЫЙ БОЙ</div>
+      <h1 style="font-size:28px;margin-top:6px">Сразись с соперником</h1>
+      <p class="muted">Игра подбирает противника по кубкам. Соперник может быть реальным игроком, но его экипировка и поведение сохраняются для асинхронного боя.</p>
+      <div class="statrow">
+        <div class="stat"><span class="muted">Твои кубки</span><b id="pvpTrophies">0</b></div>
+        <div class="stat"><span class="muted">Сила</span><b id="pvpPower">0</b></div>
+        <div class="stat"><span class="muted">Победы</span><b id="pvpWins">0</b></div>
+      </div>
+      <button class="btn" id="findOpponent" style="margin-top:14px;width:100%">НАЙТИ СОПЕРНИКА</button>
+    </div>
+    <div class="sectionTitle">Последний бой</div>
+    <div class="card panel" id="pvpResult"><div class="muted">Здесь появится результат матча.</div></div>
+  </section>
+
+  <section id="characters" class="screen">
+    <div class="top"><div class="brand">ГЕРОИ</div><div class="pill">Выбран: <span id="selectedChar">Страж</span></div></div>
+    <div class="list" id="characterList"></div>
+  </section>
+
+  <section id="shop" class="screen">
+    <div class="top"><div class="brand">МАГАЗИН</div><div class="pill">💰 <span id="shopCoins">0</span></div></div>
+    <div class="card panel">
+      <div class="row"><div><b>🎁 Ежедневный подарок</b><div class="muted">Простой бесплатный набор</div></div><button class="btn" id="freeGift">ЗАБРАТЬ</button></div>
+    </div>
+    <div class="sectionTitle">За монеты</div>
+    <div class="grid2" id="coinShop"></div>
+    <div class="sectionTitle">Премиум</div>
+    <div class="card panel">
+      <b>💎 Премиум-магазин</b>
+      <p class="muted">В V1.2 показана витрина. Реальные покупки за рубли/доллары подключаются отдельно через App Store / Google Play, чтобы платежи были безопасными и официальными.</p>
+      <button class="btn secondary" style="width:100%" onclick="toast('Премиум-витрина будет подключена на этапе мобильной версии')">ПОСМОТРЕТЬ НАБОРЫ</button>
+    </div>
   </section>
 
   <div class="lootOverlay" id="lootOverlay">
@@ -180,15 +230,27 @@ const enemies=[
  ["Разбойник",.9,30],["Клыкач",1.05,38],["Каменный страж",1.25,52],["Охотник пустоши",1.42,66],["Пепельный рыцарь",1.7,82]
 ];
 let state=load();
-let run={active:false,wave:1,enemyHp:0,enemyMax:0,playerHp:100,enemyIndex:0,loot:null,busy:false,auto:null};
+let run={active:false,wave:1,enemyHp:0,enemyMax:0,playerHp:100,enemyIndex:0,loot:null,busy:false,auto:null,autoAttack:true};
 
-function baseState(){return {level:1,xp:0,coins:150,up:{atk:0,def:0,crit:0},equip:{weapon:null,helmet:null,armor:null,gloves:null,boots:null},bestWave:0,zone:1};}
+function baseState(){return {level:1,xp:0,coins:150,up:{atk:0,def:0,crit:0},equip:{weapon:null,helmet:null,armor:null,gloves:null,boots:null},bestWave:0,zone:1,trophies:0,pvpWins:0,pvpLosses:0,character:"guardian",freeGiftDay:""};}
 function load(){try{return {...baseState(),...JSON.parse(localStorage.getItem(KEY))}}catch(e){return baseState()}}
 function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+
+const characters={
+ guardian:{name:"Страж",icon:"🛡️",desc:"Выдерживает больше урона. Идеален для стабильного прохождения.",bonus:"+18% к защите",def:1.18,atk:1,crit:1},
+ hunter:{name:"Охотник",icon:"🏹",desc:"Быстрые атаки и повышенный критический шанс.",bonus:"+8% атаки и +8% крит",def:1,atk:1.08,crit:1.08},
+ berserker:{name:"Берсерк",icon:"🪓",desc:"Чем ниже HP, тем опаснее становится.",bonus:"до +30% урона при низком HP",def:.94,atk:1.16,crit:1}
+};
+function char(){return characters[state.character]||characters.guardian}
+
 function power(){return slots.reduce((s,k)=>s+(state.equip[k]?.power||0),0)+state.up.atk*8+state.level*4}
-function attack(){return Math.round(power()*.45 + state.level*3 + state.up.atk*4)}
-function defense(){return Math.round(power()*.25 + state.up.def*9 + state.level*2)}
-function critChance(){return Math.min(40,5+state.up.crit*3)}
+function attack(){
+  let mult=char().atk;
+  if(state.character==="berserker" && run.active) mult*=1+(1-run.playerHp/100)*.30;
+  return Math.round((power()*.45 + state.level*3 + state.up.atk*4)*mult);
+}
+function defense(){return Math.round((power()*.25 + state.up.def*9 + state.level*2)*char().def)}
+function critChance(){return Math.min(40,Math.round((5+state.up.crit*3)*char().crit))}
 function xpNeed(){return 100+(state.level-1)*65}
 function rarityFor(){let r=Math.random();if(r<.62)return rarities[0];if(r<.87)return rarities[1];if(r<.975)return rarities[2];return rarities[3]}
 function item(){let slot=slots[Math.floor(Math.random()*slots.length)],r=rarityFor(),lvl=Math.max(1,state.level+Math.floor(Math.random()*3)-1);let base=12+lvl*7;let p=Math.round(base*r.mult*(.78+Math.random()*.45));let names={weapon:["Клинок странника","Грозовой топор","Пыльный серп"],helmet:["Шлем дозорного","Железная маска","Корона пепла"],armor:["Кожаный панцирь","Стальная кираса","Плащ перевала"],gloves:["Боевые перчатки","Рунические рукавицы","Когти охотника"],boots:["Сапоги следопыта","Стальные ботинки","Шаг бури"]};return {id:Date.now()+Math.random(),slot,rarity:r.id,power:p,level:lvl,name:names[slot][Math.floor(Math.random()*names[slot].length)],sell:Math.max(5,Math.round(p*(.42+.08*rarities.find(x=>x.id===r.id).mult)))}}
@@ -197,31 +259,109 @@ function sellItem(it){state.coins+=it.sell;save();toast(`Продано за ${i
 function showLoot(it){run.loot=it;const old=state.equip[it.slot];$("#lootName").textContent=it.name;$("#lootSlot").textContent=slotInfo[it.slot].name;$("#lootVisual").textContent=slotInfo[it.slot].icon;let rr=rarities.find(r=>r.id===it.rarity);$("#lootRarity").textContent=rr.name;$("#lootRarity").className="rarity "+rr.cls;$("#lootLevel").textContent=`Уровень ${it.level}`;$("#lootPower").textContent=it.power;$("#compareBox").innerHTML=old?`Сейчас: <b>${old.power}</b> силы → новый: <b>${it.power}</b> · <b style="color:${it.power>=old.power?'#63e6a7':'#ff7888'}">${it.power-old.power>=0?'+':''}${it.power-old.power}</b>`:`В слоте пока пусто. Новый предмет даст <b>+${it.power}</b> силы.`;$("#lootOverlay").classList.add("show");}
 function closeLoot(){run.loot=null;$("#lootOverlay").classList.remove("show")}
 function nextEnemy(){let z=state.zone;let idx=Math.min(enemies.length-1,Math.floor((run.wave-1)/3)+(z-1));let e=enemies[idx];run.enemyIndex=idx;let mult=1+run.wave*.13+(z-1)*.35;run.enemyMax=Math.round(e[1]*80*mult);run.enemyHp=run.enemyMax;$("#enemyName").textContent=e[0];$("#enemyLabel").textContent=e[0];$("#waveText").textContent=`Волна ${run.wave} · ${Math.min(5,((run.wave-1)%5)+1)}/5`;updateRunUI()}
-function startRun(){run.active=true;run.wave=Math.max(1,state.bestWave?Math.min(state.bestWave,20):1);run.playerHp=100;run.busy=false;show("run");nextEnemy();toast("Забег начался")}
+function startRun(){run.active=true;run.wave=Math.max(1,state.bestWave?Math.min(state.bestWave,20):1);run.playerHp=100;run.busy=false;show("run");nextEnemy();toast("Забег начался — автоатака включена");autoLoop()}
 function damageFloat(x,y,text,good=false){let el=document.createElement("div");el.className="float";el.textContent=text;el.style.left=x+"px";el.style.top=y+"px";if(good)el.style.color="#65e6a5";$("#scene").appendChild(el);setTimeout(()=>el.remove(),800)}
 function doAttack(){if(!run.active||run.busy)return;run.busy=true;let crit=Math.random()*100<critChance();let dmg=Math.max(1,Math.round(attack()*(.82+Math.random()*.4)*(crit?1.8:1)));run.enemyHp=Math.max(0,run.enemyHp-dmg);$("#enemy").classList.add("hit");setTimeout(()=>$("#enemy").classList.remove("hit"),180);damageFloat(62,80,(crit?"CRIT ":"-")+dmg);updateRunUI();if(run.enemyHp<=0){setTimeout(killEnemy,260);return}setTimeout(()=>{let incoming=Math.max(1,Math.round((8+run.enemyIndex*4+run.wave*1.7)-defense()*.06));run.playerHp=Math.max(0,run.playerHp-incoming);damageFloat(210,70,"-"+incoming);$("#actor").classList.add("hit");setTimeout(()=>$("#actor").classList.remove("hit"),180);updateRunUI();if(run.playerHp<=0){setTimeout(endRun,350)}else run.busy=false},430)}
 function killEnemy(){state.coins+=Math.round(12+run.wave*3+state.level*2);state.xp+=Math.round(28+run.wave*8);if(run.wave>state.bestWave)state.bestWave=run.wave;levelCheck();save();run.busy=false;updateHomeStats();if(run.wave%5===0){toast("Босс повержен! Следующая волна сложнее.")}showLoot(item())}
 function levelCheck(){while(state.xp>=xpNeed()){state.xp-=xpNeed();state.level++;state.coins+=50+state.level*10;toast(`Новый уровень: ${state.level}! +бонус`);if(state.level>=6)state.zone=2;if(state.level>=12)state.zone=3}}
-function endRun(){run.active=false;save();toast(`Забег окончен. Лучший результат: волна ${state.bestWave}`);setTimeout(()=>show("home"),700)}
-function heal(){let c=20+state.level*5;if(state.coins<c||run.playerHp>=100)return;state.coins-=c;run.playerHp=Math.min(100,run.playerHp+35);save();updateRunUI()}
+function endRun(){run.active=false;clearTimeout(run.auto);save();toast(`Забег окончен. Лучший результат: волна ${state.bestWave}`);setTimeout(()=>show("home"),700)}
+function potion(){
+  let c=35+state.level*7;
+  if(state.coins<c){toast("Не хватает монет");return}
+  if(run.playerHp>=100){toast("Здоровье уже полное");return}
+  state.coins-=c;
+  run.playerHp=Math.min(100,run.playerHp+45);
+  save();
+  updateRunUI();
+  toast("Зелье использовано: +45 HP");
+}
+function autoLoop(){
+  clearTimeout(run.auto);
+  if(!run.active || !run.autoAttack) return;
+  if(!run.busy && !run.loot && run.enemyHp>0) doAttack();
+  run.auto=setTimeout(autoLoop,850);
+}
 function buyUpgrade(type){let lvl=state.up[type],cost=Math.round(80*Math.pow(1.55,lvl));if(state.coins<cost){toast("Не хватает монет");return}state.coins-=cost;state.up[type]++;save();renderStats();updateHomeStats();toast("Улучшение куплено")}
-function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$("#"+id).classList.add("active");if(id==="home")renderHome();if(id==="stats")renderStats()}
-function updateRunUI(){$("#rCoins").textContent=state.coins;$("#rLevel").textContent=state.level;$("#powerRun").textContent=power();$("#playerHpBar").style.width=run.playerHp+"%";$("#enemyHpBar").style.width=Math.max(0,run.enemyHp/run.enemyMax*100)+"%";$("#healCost").textContent=20+state.level*5}
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$("#"+id).classList.add("active");if(id==="home")renderHome();if(id==="stats")renderStats();if(id==="pvp")renderPvP();if(id==="characters")renderCharacters();if(id==="shop")renderShop()}
+function updateRunUI(){$("#rCoins").textContent=state.coins;$("#rLevel").textContent=state.level;$("#powerRun").textContent=power();$("#playerHpBar").style.width=run.playerHp+"%";$("#enemyHpBar").style.width=Math.max(0,run.enemyHp/run.enemyMax*100)+"%";$("#potionCost").textContent=35+state.level*7}
 function renderEquip(id){let root=$("#"+id);root.innerHTML=slots.map(k=>{let it=state.equip[k];return `<div class="slot"><div class="emoji">${slotInfo[k].icon}</div><small>${slotInfo[k].name}</small><b>${it?it.power:"—"}</b></div>`}).join("")}
-function updateHomeStats(){$("#hLevel").textContent=state.level;$("#hPower").textContent=power();$("#hCoins").textContent=state.coins;$("#xpText").textContent=`XP ${state.xp} / ${xpNeed()}`;$("#xpBar").style.width=(state.xp/xpNeed()*100)+"%";let z=zones[state.zone-1];$("#zoneBadge").textContent=`Зона ${state.zone}`;$("#locIcon").textContent=z.icon;$("#locName").textContent=z.name;$("#locDesc").textContent=z.desc}
+function updateHomeStats(){$("#heroIcon").textContent=char().icon;$("#heroName").textContent=char().name;$("#heroBonus").textContent=char().bonus;$("#hLevel").textContent=state.level;$("#hPower").textContent=power();$("#hCoins").textContent=state.coins;$("#xpText").textContent=`XP ${state.xp} / ${xpNeed()}`;$("#xpBar").style.width=(state.xp/xpNeed()*100)+"%";let z=zones[state.zone-1];$("#zoneBadge").textContent=`Зона ${state.zone}`;$("#locIcon").textContent=z.icon;$("#locName").textContent=z.name;$("#locDesc").textContent=z.desc}
 function renderHome(){updateHomeStats();renderEquip("homeEquip")}
 function renderStats(){renderHome();$("#sLevel").textContent=state.level;$("#sPower").textContent=power();$("#sAtk").textContent=attack();$("#sDef").textContent=defense();$("#sCrit").textContent=critChance()+"%";let upgrades=[["atk","Атака","Увеличивает урон в бою.","⚔️"],["def","Защита","Снижает входящий урон.","🛡️"],["crit","Критический шанс","Повышает шанс критического удара.","🎯"]];$("#upgradeList").innerHTML=upgrades.map(u=>{let cost=Math.round(80*Math.pow(1.55,state.up[u[0]]));return `<div class="card listItem"><div class="row"><div><b>${u[3]} ${u[1]}</b><div class="muted">${u[2]}</div></div><button class="btn" style="padding:10px 12px" onclick="buyUpgrade('${u[0]}')">${cost}💰</button></div><div class="muted" style="margin-top:7px">Уровень улучшения: ${state.up[u[0]]}</div></div>`}).join("");renderEquip("statsEquip")}
+
+function pvpOpponent(){
+  let t=state.trophies;
+  let names=["Raven","IronWolf","NightFox","StoneLion","AshBlade","Falcon"];
+  let idx=Math.floor(Math.random()*names.length);
+  let diff=Math.round((Math.random()*180)-90);
+  let oppT=Math.max(0,t+diff);
+  let oppPower=Math.max(30,Math.round(power()*(.82+Math.random()*.36)));
+  return {name:names[idx],trophies:oppT,power:oppPower};
+}
+function findOpponent(){
+  let o=pvpOpponent();
+  let winChance=Math.max(.15,Math.min(.85,.5+(power()-o.power)/Math.max(100,power()*2)));
+  let win=Math.random()<winChance;
+  let delta=win?Math.round(18+Math.random()*12):Math.round(10+Math.random()*8);
+  state.trophies=Math.max(0,state.trophies+(win?delta:-delta));
+  if(win)state.pvpWins++;else state.pvpLosses++;
+  state.coins+=win?45:15;
+  save(); renderPvP();
+  $("#pvpResult").innerHTML=`<div class="pvpEnemy"><div class="charIcon">${win?"🏆":"⚔️"}</div><div><b>${o.name}</b><div class="muted">Кубки: ${o.trophies} · Сила: ${o.power}</div></div></div><div class="versus">${win?"ПОБЕДА":"ПОРАЖЕНИЕ"}</div><div class="muted" style="text-align:center">${win?"+"+delta:"-"+delta} кубков · награда ${win?45:15}💰</div>`;
+  toast(win?"PvP победа!":"PvP поражение");
+}
+function renderPvP(){
+  $("#trophies").textContent=state.trophies;$("#pvpTrophies").textContent=state.trophies;$("#pvpPower").textContent=power();$("#pvpWins").textContent=state.pvpWins;
+}
+function renderCharacters(){
+  $("#selectedChar").textContent=char().name;
+  $("#characterList").innerHTML=Object.entries(characters).map(([id,c])=>`<div class="card charCard ${state.character===id?"selected":""}" onclick="selectCharacter('${id}')"><div class="charIcon">${c.icon}</div><div style="flex:1"><h3>${c.name}</h3><p>${c.desc}</p><div class="badge" style="display:inline-block;margin-top:6px">${c.bonus}</div></div>${state.character===id?'<span class="badge">ВЫБРАН</span>':''}</div>`).join("");
+}
+function selectCharacter(id){state.character=id;save();renderCharacters();renderHome();toast("Герой выбран: "+characters[id].name)}
+function renderShop(){
+ $("#shopCoins").textContent=state.coins;
+ $("#coinShop").innerHTML=[
+  ["Малый мешок","100💰","30💰",100],
+  ["Большой мешок","350💰","90💰",350],
+  ["Сундук лута","случайный предмет","120💰",0]
+ ].map((x,i)=>`<div class="card panel"><b>${i===2?"📦":"💰"} ${x[0]}</b><div class="muted" style="margin:7px 0">${x[1]}</div><button class="btn secondary" style="width:100%" onclick="buyShop(${i})">${x[2]}</button></div>`).join("");
+}
+function buyShop(i){
+ if(i===0){if(state.coins<30)return toast("Не хватает монет");state.coins-=30;state.coins+=100}
+ if(i===1){if(state.coins<90)return toast("Не хватает монет");state.coins-=90;state.coins+=350}
+ if(i===2){if(state.coins<120)return toast("Не хватает монет");state.coins-=120;showLoot(item());renderShop();save();return}
+ save();renderShop();renderHome();toast("Покупка выполнена")
+}
+function freeGift(){
+ let today=new Date().toISOString().slice(0,10);
+ if(state.freeGiftDay===today)return toast("Подарок уже забран сегодня");
+ state.freeGiftDay=today;state.coins+=40;state.xp+=20;levelCheck();save();renderShop();renderHome();toast("Ежедневный подарок: +40💰 +20 XP")
+}
+
 function toast(t){let e=$("#toast");e.textContent=t;e.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>e.classList.remove("show"),1800)}
 function $(q){return document.querySelector(q)}
-$("#startBtn").onclick=startRun;$("#backBtn").onclick=()=>{run.active=false;show("home")};$("#statsBack").onclick=()=>show("home");$("#attackBtn").onclick=doAttack;$("#healBtn").onclick=heal;
+$("#startBtn").onclick=startRun;$("#backBtn").onclick=()=>{run.active=false;show("home")};$("#statsBack").onclick=()=>show("home");$("#attackBtn").onclick=()=>{
+  run.autoAttack=!run.autoAttack;
+  $("#attackBtn").textContent="АВТОАТАКА: "+(run.autoAttack?"ВКЛ":"ВЫКЛ");
+  if(run.autoAttack) autoLoop();
+};
+$("#potionBtn").onclick=potion;
 $("#resetBtn").onclick=()=>{if(confirm("Удалить весь прогресс?")){localStorage.removeItem(KEY);state=baseState();renderHome();toast("Прогресс сброшен")}}
-$("#sellBtn").onclick=()=>{if(run.loot){let it=run.loot;closeLoot();sellItem(it);run.busy=false;run.wave++;nextEnemy()}}
-$("#equipBtn").onclick=()=>{if(run.loot){let it=run.loot;closeLoot();equipItem(it);run.busy=false;run.wave++;nextEnemy()}}
+$("#sellBtn").onclick=()=>{if(run.loot){let it=run.loot;closeLoot();sellItem(it);run.busy=false;run.wave++;nextEnemy();autoLoop()}}
+$("#equipBtn").onclick=()=>{if(run.loot){let it=run.loot;closeLoot();equipItem(it);run.busy=false;run.wave++;nextEnemy();autoLoop()}}
 $("#lootCard").addEventListener("touchstart",e=>{window.swipeX=e.changedTouches[0].clientX},{passive:true});
 $("#lootCard").addEventListener("touchend",e=>{let dx=e.changedTouches[0].clientX-window.swipeX;if(Math.abs(dx)>55){dx>0?$("#equipBtn").click():$("#sellBtn").click()}},{passive:true});
 $("#lootCard").addEventListener("mousedown",e=>window.swipeX=e.clientX);
 $("#lootCard").addEventListener("mouseup",e=>{let dx=e.clientX-window.swipeX;if(Math.abs(dx)>55){dx>0?$("#equipBtn").click():$("#sellBtn").click()}});
-renderHome();
+
+document.querySelectorAll(".navBtn").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll(".navBtn").forEach(x=>x.classList.remove("active"));b.classList.add("active");
+ show(b.dataset.screen);
+});
+$("#findOpponent").onclick=findOpponent;
+$("#freeGift").onclick=freeGift;
+
+renderHome();renderPvP();renderCharacters();renderShop();
 </script>
 </body>
 </html>
