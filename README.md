@@ -1,4 +1,3 @@
-# Original Gear Runner — Web V0.2
-Браузерная тестовая версия для iPhone/Android.
-Откройте `index.html` в браузере или разместите папку на GitHub Pages.
-Сохранение прогресса выполняется через localStorage.
+# Original Gear Runner Web V0.3 — Single File
+
+This version contains all visual assets inside index.html. For GitHub Pages, replace the repository's index.html with this file.
