@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Original Gear Runner V0.2</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#10141c;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;touch-action:manipulation}
+#app{max-width:430px;min-height:100vh;margin:auto;padding:22px 18px 28px;display:flex;flex-direction:column;gap:14px}
+header{display:flex;justify-content:space-between;font-size:20px;font-weight:700}.title{text-align:center;font-size:30px;font-weight:800}
+.stats{text-align:center;font-size:20px}.road{height:230px;border-radius:18px;background:#252d3b;display:flex;align-items:center;justify-content:center;font-size:27px;text-align:center}
+.card{height:225px;border-radius:20px;background:#1b2230;border:2px solid #3d485c;display:flex;align-items:center;justify-content:center;text-align:center;font-size:21px;line-height:1.45;transition:transform .12s}
+.card.dragging{transition:none}.hint{text-align:center;font-size:13px;opacity:.7}
+.buttons{display:flex;gap:10px}.buttons button,.upgrade,.next{border:0;border-radius:14px;padding:17px;font-size:16px;font-weight:800;color:#fff;background:#303b4d}.buttons button{flex:1}.upgrade{width:100%}.next{width:100%;background:#40546d}
+.feedback{text-align:center;min-height:24px;font-size:15px}
+</style>
+</head>
+<body><main id="app">
+<header><span id="coins">Монеты: 100</span><span id="level">Уровень: 1</span></header>
+<div class="title">GEAR RUNNER</div><div class="stats" id="power">СИЛА: 22</div>
+<div class="road">▲<br>RUN<br>▼</div>
+<div id="card" class="card"></div>
+<div class="hint">← Свайп влево: ПРОДАТЬ &nbsp; • &nbsp; НАДЕТЬ: вправо →</div>
+<div class="buttons"><button id="sell">ПРОДАТЬ</button><button id="equip">НАДЕТЬ</button></div>
+<button class="upgrade" id="upgrade">УЛУЧШИТЬ</button>
+<div class="feedback" id="feedback"></div>
+<button class="next" id="next">ПОЛУЧИТЬ НОВЫЙ ПРЕДМЕТ</button>
+</main>
+<script>
+const types=["Weapon","Helmet","Armor","Gloves","Boots"], rarities=["Common","Rare","Epic","Legendary"];
+let state=JSON.parse(localStorage.getItem("gear_runner_v02")||"null")||{coins:100,level:1,equipped:{Weapon:{level:1,power:5,rarity:"Common"},Helmet:{level:1,power:2,rarity:"Common"},Armor:{level:1,power:3,rarity:"Common"},Gloves:{level:1,power:1,rarity:"Common"},Boots:{level:1,power:1,rarity:"Common"}}};
+let item=null,startX=0,drag=false;
+const $=id=>document.getElementById(id), save=()=>localStorage.setItem("gear_runner_v02",JSON.stringify(state));
+function power(){return 10+Object.values(state.equipped).reduce((a,x)=>a+x.power,0)}
+function cost(){return Math.floor(50*Math.pow(1.35,state.level-1))}
+function sellValue(x){return Math.max(1,Math.floor(x.power*({Common:1,Rare:1.35,Epic:1.8,Legendary:2.5}[x.rarity])*2))}
+function generate(){let type=types[Math.floor(Math.random()*types.length)], level=Math.max(1,state.level+Math.floor(Math.random()*4)-1),ri=Math.floor(Math.random()*4),rarity=rarities[ri],mult=[1,1.35,1.8,2.5][ri],p=Math.max(1,Math.floor(level*4*mult+Math.random()*4));item={type,level,power:p,rarity,sellValue:Math.max(1,Math.floor(p*mult*2))};render();$("feedback").textContent="Новый предмет найден"}
+function render(){ $("coins").textContent="Монеты: "+state.coins;$("level").textContent="Уровень: "+state.level;$("power").textContent="СИЛА: "+power();if(!item){$("card").innerHTML="Предмет отсутствует<br><br>Получите новый предмет";return}let old=state.equipped[item.type],d=item.power-old.power,sign=d>=0?"+":"";$("card").innerHTML=`<b>${item.type}</b><br>${item.rarity} • Уровень ${item.level}<br>Сила: ${item.power}<br>Продажа: ${item.sellValue} монет<br><br>Сравнение: ${sign}${d} силы`}
+function sell(){if(!item)return;state.coins+=item.sellValue;$("feedback").textContent="+"+item.sellValue+" монет — предмет продан";item=null;save();render()}
+function equip(){if(!item)return;let old=state.equipped[item.type],v=sellValue(old);state.coins+=v;state.equipped[item.type]={level:item.level,power:item.power,rarity:item.rarity};let p=item.power;item=null;$("feedback").textContent=`${old?"Предмет":""} надет. Старый продан за ${v} монет. Сила: ${p}`;save();render()}
+function upgrade(){let c=cost();if(state.coins<c){$("feedback").textContent="Не хватает монет. Нужно: "+c;return}state.coins-=c;state.level++;$("feedback").textContent="Уровень повышен до "+state.level+"!";save();render()}
+function swipe(end){let dx=end-startX;drag=false;$("card").classList.remove("dragging");$("card").style.transform="translateX(0)";if(Math.abs(dx)<90){$("feedback").textContent="Свайп слишком короткий";return}dx<0?sell():equip()}
+$("card").addEventListener("touchstart",e=>{startX=e.touches[0].clientX;drag=true;$("card").classList.add("dragging")},{passive:true});
+$("card").addEventListener("touchmove",e=>{if(!drag)return;let dx=e.touches[0].clientX-startX;$("card").style.transform=`translateX(${Math.max(-120,Math.min(120,dx*.45))}px)`},{passive:true});
+$("card").addEventListener("touchend",e=>swipe(e.changedTouches[0].clientX));
+$("card").addEventListener("mousedown",e=>{startX=e.clientX;drag=true;$("card").classList.add("dragging")});
+window.addEventListener("mousemove",e=>{if(drag)$("card").style.transform=`translateX(${Math.max(-120,Math.min(120,(e.clientX-startX)*.45))}px)`});
+window.addEventListener("mouseup",e=>{if(drag)swipe(e.clientX)});
+$("sell").onclick=sell;$("equip").onclick=equip;$("upgrade").onclick=upgrade;$("next").onclick=generate;generate();
+</script></body></html>
