@@ -3,140 +3,225 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#101522">
-<title>Gear Runner V0.3</title>
+<meta name="theme-color" content="#0b1020">
+<title>Original Gear Runner V1.0</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:#080b12;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}
-button{font:inherit;color:inherit;border:0}
-.app{height:100dvh;max-width:520px;margin:auto;background:#101522;position:relative;overflow:hidden}
-.scene{height:55%;min-height:410px;position:relative;overflow:hidden;background:linear-gradient(#24395b 0%,#5d8da0 47%,#8aa47e 48%,#455246 100%)}
-.sky{position:absolute;inset:0;background:radial-gradient(circle at 78% 20%,#fff7b3 0 7%,transparent 8%),linear-gradient(#263b65,#6e9ba9 52%,#71845f 53%,#3c433b)}
-.mountain{position:absolute;bottom:25%;width:120%;height:34%;left:-10%;background:#3e5260;clip-path:polygon(0 100%,13% 55%,25% 77%,40% 24%,52% 69%,66% 38%,79% 72%,92% 30%,100% 65%,100% 100%)}
-.road{position:absolute;bottom:-5%;left:18%;width:64%;height:65%;background:#30343d;clip-path:polygon(34% 0,66% 0,100% 100%,0 100%)}
-.road:after{content:"";position:absolute;left:48%;top:0;width:4%;height:100%;background:repeating-linear-gradient(#f5d979 0 35px,transparent 35px 75px);transform:perspective(180px) rotateX(20deg);opacity:.8}
-.sceneTop{position:absolute;top:0;left:0;right:0;padding:calc(env(safe-area-inset-top) + 12px) 14px 0;display:flex;justify-content:space-between;z-index:5}
-.pill{background:#0b101bdb;border:1px solid #ffffff1c;border-radius:16px;padding:7px 10px;backdrop-filter:blur(8px);font-weight:700;font-size:13px}
-.hero{position:absolute;left:50%;bottom:17%;transform:translateX(-50%);width:120px;filter:drop-shadow(0 16px 12px #0007);animation:bob 1.3s ease-in-out infinite}
-@keyframes bob{50%{transform:translate(-50%,-7px)}}
-.loot{position:absolute;right:12%;bottom:25%;width:55px;animation:float 1.8s ease-in-out infinite}
-@keyframes float{50%{transform:translateY(-10px) rotate(4deg)}}
-.label{position:absolute;bottom:8%;left:50%;transform:translateX(-50%);background:#0a0f18d9;border:1px solid #fff2;border-radius:20px;padding:8px 15px;font-weight:800;font-size:12px}
-.panel{position:absolute;left:0;right:0;bottom:0;height:49%;min-height:370px;background:#101522;border-radius:24px 24px 0 0;border-top:1px solid #ffffff14;padding:12px 14px calc(env(safe-area-inset-bottom) + 12px);z-index:10}
-.handle{width:42px;height:4px;background:#596173;border-radius:10px;margin:0 auto 10px}
-.tabs{display:flex;gap:7px;margin-bottom:10px}
-.tab{flex:1;padding:9px 6px;border-radius:12px;background:#171d2a;color:#929aab;font-size:12px;font-weight:800}
-.tab.active{background:#252e41;color:#fff}
-.card{height:180px;border-radius:20px;background:linear-gradient(145deg,#1b2231,#121824);border:1px solid #ffffff18;position:relative;overflow:hidden;padding:13px;touch-action:none;transition:transform .18s,opacity .18s}
-.card.rare{box-shadow:0 0 0 1px #4f8cff55,0 12px 35px #1d4fff15}
-.card.epic{box-shadow:0 0 0 1px #a05cff77,0 12px 35px #8a3cff15}
-.card.legendary{box-shadow:0 0 0 1px #f0b94d99,0 12px 35px #ffae001f}
-.itemIcon{position:absolute;right:14px;top:18px;width:100px;height:100px}
-.itemName{font-size:19px;font-weight:900;margin-top:3px}
-.muted{color:#8e97a8;font-size:12px}
-.power{font-size:30px;font-weight:950;margin:8px 0 2px}
-.diff{font-weight:800;font-size:12px}
-.compare{margin-top:8px;padding:7px 9px;border-radius:10px;background:#0b1019;color:#b9c1d0;font-size:11px}
-.hint{position:absolute;bottom:9px;left:0;right:0;text-align:center;color:#737d90;font-size:10px}
-.actions{display:flex;gap:8px;margin-top:9px}
-.action{flex:1;border-radius:14px;padding:12px;background:#1a2130;font-weight:900}
-.action.sell{background:#2a1d24;color:#ff9aa7}
-.action.equip{background:#263b72;color:#b9caff}
-.slots{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:10px}
-.slot{height:58px;border-radius:12px;background:#171d29;border:1px solid #ffffff10;display:flex;align-items:center;justify-content:center;position:relative}
-.slot img{width:38px;height:38px}.slot b{position:absolute;right:4px;bottom:3px;font-size:9px;color:#dce2ee}
-.toast{position:absolute;top:18%;left:50%;transform:translateX(-50%) translateY(-10px);padding:9px 14px;border-radius:14px;background:#090d16eF;border:1px solid #ffffff1c;z-index:20;opacity:0;pointer-events:none;font-weight:800;font-size:12px;transition:.25s}
-.toast.show{opacity:1;transform:translateX(-50%)}
-.statline{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.level{font-weight:900}.up{font-size:11px;color:#aab4c8}
-.upBtn{background:#314f9b;border-radius:10px;padding:6px 9px;font-weight:900;font-size:11px}
-@media(max-height:720px){.scene{height:52%}.panel{height:52%}.card{height:160px}.slots{margin-top:6px}.slot{height:50px}}
+html,body{margin:0;background:#070b16;color:#eef3ff;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100%;overflow-x:hidden}
+body{display:flex;justify-content:center}
+button{font:inherit}
+#app{width:min(100vw,520px);min-height:100vh;background:#0b1020;position:relative;overflow:hidden}
+.screen{min-height:100vh;padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom);display:none}
+.screen.active{display:block}
+.top{display:flex;justify-content:space-between;align-items:center;padding:12px 2px 8px}
+.brand{font-weight:900;letter-spacing:.4px;font-size:18px}
+.muted{color:#8290aa;font-size:12px}
+.pill{background:#151d32;border:1px solid #27324c;border-radius:999px;padding:7px 11px;font-weight:800;font-size:13px}
+.card{background:linear-gradient(180deg,#131b2e,#0f1627);border:1px solid #25314c;border-radius:20px;box-shadow:0 14px 35px #0005}
+.btn{border:0;border-radius:15px;padding:14px 16px;color:#fff;font-weight:900;background:linear-gradient(135deg,#6d5dfc,#4b8cff);box-shadow:0 10px 22px #4b75ff30}
+.btn:active{transform:scale(.98)}
+.btn.secondary{background:#18223a;border:1px solid #2a3856;box-shadow:none}
+.btn.danger{background:#2b1822;border:1px solid #663143;box-shadow:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.homeHero{padding:20px;margin-top:8px;background:radial-gradient(circle at 75% 20%,#3150a955,transparent 35%),linear-gradient(150deg,#121b34,#0e1424)}
+h1{font-size:34px;line-height:1;margin:0 0 10px}
+.big{font-size:27px;font-weight:950}
+.homeHero p{color:#9aa7bf;line-height:1.45;margin:0 0 18px}
+.statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.stat{padding:11px;border-radius:14px;background:#0a1020;border:1px solid #202c46}
+.stat b{display:block;font-size:16px;margin-top:3px}
+.sectionTitle{font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:1px;color:#71809d;margin:18px 2px 8px}
+.location{padding:15px;display:flex;gap:12px;align-items:center}
+.location .icon{width:48px;height:48px;border-radius:15px;background:#17233b;display:grid;place-items:center;font-size:25px}
+.location b{display:block}.location small{color:#8794ad}
+.progress{height:7px;background:#1c2740;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;background:linear-gradient(90deg,#6d5dfc,#46d6ff);border-radius:inherit}
+.equip{padding:14px}
+.equipGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.slot{min-height:78px;border-radius:14px;background:#0b1120;border:1px solid #202d47;padding:7px;text-align:center;position:relative}
+.slot .emoji{font-size:24px}.slot small{display:block;color:#8190aa;font-size:9px;margin-top:3px}.slot b{font-size:11px}
+.runScene{height:43vh;min-height:300px;position:relative;border-radius:22px;overflow:hidden;margin-top:6px;border:1px solid #27324c;background:linear-gradient(#172d54 0 38%,#263e4a 38% 48%,#101b26 48%)}
+.sky{position:absolute;inset:0;background:radial-gradient(circle at 70% 16%,#ffe8a633 0 5%,transparent 6%),linear-gradient(#182c50,#31516c 55%,#1c2932)}
+.mountain{position:absolute;bottom:48%;width:0;height:0;border-left:90px solid transparent;border-right:90px solid transparent;border-bottom:115px solid #20354b;opacity:.95}
+.m1{left:2%}.m2{left:28%;border-left-width:125px;border-right-width:125px;border-bottom-width:150px}.m3{right:0;border-left-width:105px;border-right-width:105px;border-bottom-width:135px}
+.road{position:absolute;left:16%;right:16%;bottom:0;height:57%;background:linear-gradient(90deg,#27313a,#46505a 48%,#27313a);clip-path:polygon(27% 0,73% 0,100% 100%,0 100%)}
+.road:after{content:"";position:absolute;left:48%;top:0;bottom:0;width:4%;background:repeating-linear-gradient(#dce5e8 0 22px,transparent 22px 44px);opacity:.5}
+.hud{position:absolute;left:10px;right:10px;top:10px;display:flex;justify-content:space-between;gap:8px}
+.hudBox{background:#09101dcc;border:1px solid #34415e;border-radius:13px;padding:8px 10px;backdrop-filter:blur(7px)}
+.hp{width:130px;height:7px;background:#311923;border-radius:9px;overflow:hidden;margin-top:4px}.hp i{display:block;height:100%;background:#ef5b71}
+.actor{position:absolute;bottom:20%;left:28%;width:76px;height:100px;display:flex;align-items:center;justify-content:center;transition:transform .12s}
+.actor .body{width:46px;height:64px;background:linear-gradient(135deg,#6d5dfc,#324fbd);border-radius:17px 17px 13px 13px;border:3px solid #a9b5ff;position:relative}
+.actor .head{position:absolute;top:-27px;width:38px;height:38px;border-radius:50%;background:#d99d75;border:3px solid #8e5c4d}
+.actor .visor{position:absolute;top:5px;left:3px;right:3px;height:9px;background:#1e2740;border-radius:6px}
+.actor .leg{position:absolute;bottom:-22px;width:12px;height:25px;background:#26365d;border-radius:7px}.leg.l{left:7px}.leg.r{right:7px}
+.enemy{position:absolute;bottom:21%;right:27%;width:88px;height:105px;display:flex;justify-content:center;align-items:center;transition:transform .12s}
+.enemy .body{width:54px;height:67px;background:linear-gradient(135deg,#d64e64,#6f263d);border-radius:20px 20px 13px 13px;border:3px solid #ff8a96;position:relative}
+.enemy .head{position:absolute;top:-28px;width:42px;height:42px;border-radius:14px;background:#762d45;border:3px solid #ff8a96}
+.enemy .eye{position:absolute;width:7px;height:7px;border-radius:50%;background:#ffe4e4;top:12px}.enemy .eye.a{left:9px}.enemy .eye.b{right:9px}
+.enemy .horn{position:absolute;top:-12px;width:14px;height:22px;background:#e9b7c0;clip-path:polygon(50% 0,100% 100%,0 100%)}.horn.a{left:2px}.horn.b{right:2px}
+.float{position:absolute;font-size:22px;font-weight:950;animation:float .8s ease-out forwards;pointer-events:none;text-shadow:0 2px 5px #000}
+@keyframes float{from{transform:translateY(0);opacity:1}to{transform:translateY(-55px);opacity:0}}
+@keyframes hit{50%{transform:translateX(10px) scale(.96)}}
+.hit{animation:hit .18s}
+.runBottom{padding:10px 0}
+.enemyName{font-weight:900;font-size:15px}.wave{color:#8290aa;font-size:11px}
+.actionRow{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}
+.attack{background:linear-gradient(135deg,#ff5d77,#ff8a5c)}
+.lootOverlay{position:fixed;inset:0;background:#030611bb;display:none;align-items:flex-end;justify-content:center;z-index:10;padding:12px}
+.lootOverlay.show{display:flex}
+.lootCard{width:min(100%,500px);padding:17px;transform:translateY(10px);animation:up .2s ease-out}
+@keyframes up{to{transform:translateY(0)}}
+.lootHeader{display:flex;justify-content:space-between;align-items:center}
+.itemVisual{height:115px;margin:12px 0;border-radius:17px;background:radial-gradient(circle,#2b385e,#0b1120);display:grid;place-items:center;font-size:60px;border:1px solid #2d3a58}
+.itemName{font-size:20px;font-weight:950}.rarity{font-weight:900;font-size:12px}.power{font-size:32px;font-weight:950}
+.compare{padding:10px;border-radius:13px;background:#0a1120;margin:10px 0;color:#aab6cc}
+.swipeHint{text-align:center;color:#8290aa;font-size:11px;margin:8px 0}.swipeArea{touch-action:pan-y}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#121b2f;border:1px solid #31405f;padding:10px 14px;border-radius:12px;z-index:30;display:none;font-weight:800;font-size:12px;box-shadow:0 10px 30px #0008}
+.toast.show{display:block}
+.panel{padding:15px;margin-top:10px}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.list{display:grid;gap:8px}.listItem{padding:12px;background:#0b1120;border:1px solid #202c45;border-radius:14px}
+.footerBtns{display:flex;gap:8px;margin:14px 0 30px}.footerBtns .btn{flex:1}
+.badge{padding:4px 7px;border-radius:8px;background:#18233b;color:#a8b8d5;font-size:10px;font-weight:900}
+.common{color:#b9c1cf}.rare{color:#52b6ff}.epic{color:#bf75ff}.legendary{color:#ffb84e}
+@media(max-height:680px){.runScene{height:39vh;min-height:260px}.screen{padding-top:2px}}
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="scene">
-    <div class="sky"></div><div class="mountain"></div><div class="road"></div>
-    <div class="sceneTop">
-      <div class="pill">⚡ POWER <span id="powerTop">22</span></div>
-      <div class="pill"><img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2080%2080%22%3E%3Ccircle%20cx%3D%2240%22%20cy%3D%2240%22%20r%3D%2232%22%20fill%3D%22%23f3c94d%22%2F%3E%3Ccircle%20cx%3D%2240%22%20cy%3D%2240%22%20r%3D%2224%22%20fill%3D%22none%22%20stroke%3D%22%23ffeaa2%22%20stroke-width%3D%225%22%2F%3E%3Cpath%20d%3D%22M45%2024c-11-6-21%202-17%2010%204%207%2018%204%2022%2011%204%208-7%2015-19%2010%22%20fill%3D%22none%22%20stroke%3D%22%239a6a13%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E" style="width:16px;height:16px;vertical-align:middle"> <span id="coinsTop">100</span></div>
+<div id="app">
+  <section id="home" class="screen active">
+    <div class="top"><div class="brand">ORIGINAL GEAR RUNNER</div><div class="pill">V1.0</div></div>
+    <div class="card homeHero">
+      <div class="muted">ПЕРВЫЙ ПОЛНЫЙ ПРОТОТИП</div>
+      <h1>Стань сильнее.<br>Дойди дальше.</h1>
+      <p>Беги по локациям, побеждай врагов, собирай экипировку и решай судьбу каждого предмета: <b>свайп вправо — надеть</b>, <b>влево — продать</b>.</p>
+      <button class="btn" id="startBtn">НАЧАТЬ ЗАБЕГ</button>
+      <div class="statrow">
+        <div class="stat"><span class="muted">Уровень</span><b id="hLevel">1</b></div>
+        <div class="stat"><span class="muted">Сила</span><b id="hPower">0</b></div>
+        <div class="stat"><span class="muted">Монеты</span><b id="hCoins">0</b></div>
+      </div>
     </div>
-    <img class="hero" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20180%20240%22%3E%0A%3Cdefs%3E%3ClinearGradient%20id%3D%22b%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%235b7cff%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23263bb5%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%0A%3Cellipse%20cx%3D%2290%22%20cy%3D%22225%22%20rx%3D%2248%22%20ry%3D%229%22%20fill%3D%22%23000%22%20opacity%3D%22.22%22%2F%3E%0A%3Ccircle%20cx%3D%2290%22%20cy%3D%2245%22%20r%3D%2228%22%20fill%3D%22%23f0b48b%22%2F%3E%0A%3Cpath%20d%3D%22M61%2044c2-31%2056-40%2061%201-10-8-19-12-31-11-12%200-20%205-30%2010z%22%20fill%3D%22%23242634%22%2F%3E%0A%3Cpath%20d%3D%22M62%2093c8-18%2048-18%2056%200l20%2073-48%2022-48-22z%22%20fill%3D%22url%28%23b%29%22%2F%3E%0A%3Cpath%20d%3D%22M73%20113l-28%2062%2018%209%2030-54zM107%20113l28%2062-18%209-30-54z%22%20fill%3D%22%23f0b48b%22%2F%3E%0A%3Cpath%20d%3D%22M72%20187l-18%2031h28l15-31zM108%20187l18%2031H98l-15-31z%22%20fill%3D%22%23242634%22%2F%3E%0A%3Ccircle%20cx%3D%2279%22%20cy%3D%2248%22%20r%3D%223%22%20fill%3D%22%2320212a%22%2F%3E%3Ccircle%20cx%3D%22101%22%20cy%3D%2248%22%20r%3D%223%22%20fill%3D%22%2320212a%22%2F%3E%0A%3Cpath%20d%3D%22M81%2061c6%204%2012%204%2018%200%22%20fill%3D%22none%22%20stroke%3D%22%239a5b52%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%0A%3C%2Fsvg%3E">
-    <img id="lootImg" class="loot" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20160%20160%22%3E%3Cg%20transform%3D%22rotate%28-28%2080%2080%29%22%3E%3Crect%20x%3D%2273%22%20y%3D%2222%22%20width%3D%2218%22%20height%3D%2292%22%20rx%3D%227%22%20fill%3D%22%23dfe6f2%22%2F%3E%3Cpath%20d%3D%22M73%2028h18l-4-15H77z%22%20fill%3D%22%23f5c24b%22%2F%3E%3Crect%20x%3D%2267%22%20y%3D%22101%22%20width%3D%2230%22%20height%3D%2242%22%20rx%3D%228%22%20fill%3D%22%23394155%22%2F%3E%3Cpath%20d%3D%22M72%20111h20%22%20stroke%3D%22%238f9ab0%22%20stroke-width%3D%225%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
-    <div class="label">Новый предмет впереди</div>
-  </div>
-
-  <div id="toast" class="toast"></div>
-
-  <section class="panel">
-    <div class="handle"></div>
-    <div class="statline"><div><div class="level">Уровень <span id="level">1</span></div><div class="up">Сила растёт вместе с экипировкой</div></div><button class="upBtn" id="upgradeBtn">УЛУЧШИТЬ · <span id="cost">50</span></button></div>
-    <div class="tabs"><button class="tab active">ДОБЫЧА</button><button class="tab">ЭКИПИРОВКА</button><button class="tab">ПРОФИЛЬ</button></div>
-    <div id="card" class="card">
-      <img id="itemIcon" class="itemIcon" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20160%20160%22%3E%3Cg%20transform%3D%22rotate%28-28%2080%2080%29%22%3E%3Crect%20x%3D%2273%22%20y%3D%2222%22%20width%3D%2218%22%20height%3D%2292%22%20rx%3D%227%22%20fill%3D%22%23dfe6f2%22%2F%3E%3Cpath%20d%3D%22M73%2028h18l-4-15H77z%22%20fill%3D%22%23f5c24b%22%2F%3E%3Crect%20x%3D%2267%22%20y%3D%22101%22%20width%3D%2230%22%20height%3D%2242%22%20rx%3D%228%22%20fill%3D%22%23394155%22%2F%3E%3Cpath%20d%3D%22M72%20111h20%22%20stroke%3D%22%238f9ab0%22%20stroke-width%3D%225%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
-      <div class="muted" id="itemType">ОРУЖИЕ · COMMON</div>
-      <div class="itemName" id="itemName">Железный клинок</div>
-      <div class="power" id="itemPower">+8</div>
-      <div class="diff" id="diff">+3 к текущей силе</div>
-      <div class="compare" id="compare">Текущий предмет: +5 · Продажа: 18 🪙</div>
-      <div class="hint">Свайп влево — продать · вправо — надеть</div>
+    <div class="sectionTitle">Прогресс</div>
+    <div class="card panel">
+      <div class="row"><b id="xpText">XP 0 / 100</b><span class="badge" id="zoneBadge">Зона 1</span></div>
+      <div class="progress" style="margin-top:8px"><i id="xpBar" style="width:0%"></i></div>
     </div>
-    <div class="actions"><button class="action sell" id="sellBtn">ПРОДАТЬ</button><button class="action equip" id="equipBtn">НАДЕТЬ</button></div>
-    <div class="slots" id="slots"></div>
+    <div class="sectionTitle">Экипировка</div>
+    <div class="card equip"><div class="equipGrid" id="homeEquip"></div></div>
+    <div class="sectionTitle">Локация</div>
+    <div class="card location"><div class="icon" id="locIcon">🌲</div><div><b id="locName">Сумеречный тракт</b><small id="locDesc">Первые шаги. Слабые враги и базовый лут.</small></div></div>
+    <div class="footerBtns"><button class="btn secondary" id="resetBtn">Сбросить прогресс</button></div>
   </section>
+
+  <section id="run" class="screen">
+    <div class="top"><button class="btn secondary" id="backBtn" style="padding:9px 12px">←</button><div class="brand" id="runTitle">ЗАБЕГ</div><div class="pill">💰 <span id="rCoins">0</span></div></div>
+    <div class="runScene" id="scene">
+      <div class="sky"></div><div class="mountain m1"></div><div class="mountain m2"></div><div class="mountain m3"></div><div class="road"></div>
+      <div class="hud">
+        <div class="hudBox"><b>Герой · ур. <span id="rLevel">1</span></b><div class="hp"><i id="playerHpBar" style="width:100%"></i></div></div>
+        <div class="hudBox" style="text-align:right"><b id="enemyName">Разбойник</b><div class="hp"><i id="enemyHpBar" style="width:100%"></i></div></div>
+      </div>
+      <div class="actor" id="actor"><div class="head"></div><div class="body"><div class="visor"></div><div class="leg l"></div><div class="leg r"></div></div></div>
+      <div class="enemy" id="enemy"><div class="horn a"></div><div class="horn b"></div><div class="head"><div class="eye a"></div><div class="eye b"></div></div><div class="body"></div></div>
+    </div>
+    <div class="runBottom">
+      <div class="row"><div><div class="enemyName" id="enemyLabel">Разбойник</div><div class="wave" id="waveText">Волна 1 · 1/5</div></div><div class="badge">⚔️ <span id="powerRun">0</span></div></div>
+      <div class="actionRow"><button class="btn attack" id="attackBtn">АТАКА</button><button class="btn secondary" id="healBtn">ЛЕЧЕНИЕ · <span id="healCost">20</span>💰</button></div>
+    </div>
+  </section>
+
+  <section id="stats" class="screen">
+    <div class="top"><div class="brand">ПРОФИЛЬ</div><button class="btn secondary" id="statsBack">←</button></div>
+    <div class="card panel">
+      <div class="row"><div><div class="muted">УРОВЕНЬ</div><div class="big" id="sLevel">1</div></div><div style="text-align:right"><div class="muted">СИЛА</div><div class="big" id="sPower">0</div></div></div>
+      <div class="statrow">
+        <div class="stat"><span class="muted">Атака</span><b id="sAtk">0</b></div>
+        <div class="stat"><span class="muted">Защита</span><b id="sDef">0</b></div>
+        <div class="stat"><span class="muted">Крит</span><b id="sCrit">5%</b></div>
+      </div>
+    </div>
+    <div class="sectionTitle">Постоянные улучшения</div>
+    <div class="list" id="upgradeList"></div>
+    <div class="sectionTitle">Экипировка</div>
+    <div class="card equip"><div class="equipGrid" id="statsEquip"></div></div>
+  </section>
+
+  <div class="lootOverlay" id="lootOverlay">
+    <div class="card lootCard swipeArea" id="lootCard">
+      <div class="lootHeader"><div><div class="muted">ДОБЫЧА</div><div class="itemName" id="lootName">—</div></div><div class="pill" id="lootSlot">Оружие</div></div>
+      <div class="itemVisual" id="lootVisual">⚔️</div>
+      <div class="row"><div><div class="rarity" id="lootRarity">Обычный</div><div class="muted" id="lootLevel">Уровень 1</div></div><div class="power" id="lootPower">10</div></div>
+      <div class="compare" id="compareBox">Сравнение: —</div>
+      <div class="swipeHint">← СВАЙП ВЛЕВО: ПРОДАТЬ &nbsp;&nbsp;•&nbsp;&nbsp; СВАЙП ВПРАВО: НАДЕТЬ →</div>
+      <div class="grid2"><button class="btn danger" id="sellBtn">ПРОДАТЬ</button><button class="btn" id="equipBtn">НАДЕТЬ</button></div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
 </div>
 
 <script>
-const icons={Weapon:"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20160%20160%22%3E%3Cg%20transform%3D%22rotate%28-28%2080%2080%29%22%3E%3Crect%20x%3D%2273%22%20y%3D%2222%22%20width%3D%2218%22%20height%3D%2292%22%20rx%3D%227%22%20fill%3D%22%23dfe6f2%22%2F%3E%3Cpath%20d%3D%22M73%2028h18l-4-15H77z%22%20fill%3D%22%23f5c24b%22%2F%3E%3Crect%20x%3D%2267%22%20y%3D%22101%22%20width%3D%2230%22%20height%3D%2242%22%20rx%3D%228%22%20fill%3D%22%23394155%22%2F%3E%3Cpath%20d%3D%22M72%20111h20%22%20stroke%3D%22%238f9ab0%22%20stroke-width%3D%225%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E",Helmet:"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20160%20160%22%3E%3Cpath%20d%3D%22M38%2092V68c0-31%2019-49%2042-49s42%2018%2042%2049v24H38z%22%20fill%3D%22%236d7cff%22%2F%3E%3Cpath%20d%3D%22M39%2086h82v22H39z%22%20fill%3D%22%2330384f%22%2F%3E%3Cpath%20d%3D%22M58%2064c7-17%2018-25%2031-25s24%208%2031%2025%22%20fill%3D%22none%22%20stroke%3D%22%23aeb7ff%22%20stroke-width%3D%228%22%2F%3E%3Crect%20x%3D%2251%22%20y%3D%22105%22%20width%3D%2258%22%20height%3D%2212%22%20rx%3D%226%22%20fill%3D%22%231e2434%22%2F%3E%3C%2Fsvg%3E",Armor:"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20160%20160%22%3E%3Cpath%20d%3D%22M50%2031l30-13%2030%2013%2024%2029-20%2020-9-13v60H55V67l-9%2013-20-20z%22%20fill%3D%22%2359677d%22%2F%3E%3Cpath%20d%3D%22M80%2020v94%22%20stroke%3D%22%23aebbd0%22%20stroke-width%3D%226%22%2F%3E%3Cpath%20d%3D%22M52%2059h56%22%20stroke%3D%22%23aebbd0%22%20stroke-width%3D%225%22%2F%3E%3C%2Fsvg%3E",Gloves:"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20160%20160%22%3E%3Cpath%20d%3D%22M48%20112c-9-14-8-35-4-54l7-34c2-8%2014-7%2014%202v28l6-41c1-9%2014-8%2014%201v39l6-33c2-9%2014-7%2014%202v36l7-25c2-8%2013-5%2012%204l-4%2048c-2%2020-14%2031-30%2036z%22%20fill%3D%22%23b84f5e%22%2F%3E%3Cpath%20d%3D%22M45%2096c20%205%2043%206%2064%200%22%20stroke%3D%22%23f0a5ae%22%20stroke-width%3D%225%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E",Boots:"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20160%20160%22%3E%3Cpath%20d%3D%22M54%2030h42v61l34%2020c10%206%208%2020-4%2020H44c-10%200-15-10-8-18l18-22z%22%20fill%3D%22%234d5568%22%2F%3E%3Cpath%20d%3D%22M55%20100h49%22%20stroke%3D%22%23aeb6c8%22%20stroke-width%3D%227%22%2F%3E%3Cpath%20d%3D%22M44%20130h79%22%20stroke%3D%22%23232838%22%20stroke-width%3D%229%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E"};
-const names={Weapon:["Железный клинок","Стальной тесак","Охотничий меч","Клинок странника"],Helmet:["Кожаный шлем","Стражевой шлем","Шлем следопыта","Королевский шлем"],Armor:["Потёртая броня","Стальная кираса","Броня рейдера","Королевский доспех"],Gloves:["Кожаные перчатки","Боевые перчатки","Перчатки рейдера","Перчатки чемпиона"],Boots:["Дорожные сапоги","Стальные сапоги","Сапоги охотника","Сапоги героя"]};
-const rarityNames=["Common","Rare","Epic","Legendary"];
-const rarityMult=[1,1.35,1.8,2.5];
-const slotNames={Weapon:"Оружие",Helmet:"Шлем",Armor:"Броня",Gloves:"Перчатки",Boots:"Сапоги"};
-const types=Object.keys(icons);
-let state=JSON.parse(localStorage.getItem("gear_runner_v03")||"null")||{coins:100,level:1,equipped:{Weapon:5,Helmet:2,Armor:3,Gloves:1,Boots:1},current:null};
-let current=state.current||makeItem();
-let startX=0,dragging=false;
+const KEY="ogr_v1_save";
+const slots=["weapon","helmet","armor","gloves","boots"];
+const slotInfo={
+ weapon:{name:"Оружие",icon:"⚔️"},helmet:{name:"Шлем",icon:"🪖"},armor:{name:"Броня",icon:"🛡️"},gloves:{name:"Перчатки",icon:"🥊"},boots:{name:"Ботинки",icon:"🥾"}
+};
+const rarities=[
+ {id:"common",name:"Обычный",cls:"common",mult:1,color:"#b9c1cf"},
+ {id:"rare",name:"Редкий",cls:"rare",mult:1.45,color:"#52b6ff"},
+ {id:"epic",name:"Эпический",cls:"epic",mult:2.05,color:"#bf75ff"},
+ {id:"legendary",name:"Легендарный",cls:"legendary",mult:3.0,color:"#ffb84e"}
+];
+const zones=[
+ {name:"Сумеречный тракт",icon:"🌲",desc:"Первые шаги. Слабые враги и базовый лут.",unlock:1},
+ {name:"Каменные перевалы",icon:"⛰️",desc:"Враги быстрее и добыча заметно сильнее.",unlock:6},
+ {name:"Пепельная цитадель",icon:"🏰",desc:"Опасная зона с элитными врагами и легендарной добычей.",unlock:12}
+];
+const enemies=[
+ ["Разбойник",.9,30],["Клыкач",1.05,38],["Каменный страж",1.25,52],["Охотник пустоши",1.42,66],["Пепельный рыцарь",1.7,82]
+];
+let state=load();
+let run={active:false,wave:1,enemyHp:0,enemyMax:0,playerHp:100,enemyIndex:0,loot:null,busy:false,auto:null};
 
-function makeItem(){
- const type=types[Math.floor(Math.random()*types.length)];
- const r=Math.random()<.62?0:Math.random()<.55?1:Math.random()<.72?2:3;
- const base=3+state.level*3+Math.floor(Math.random()*8);
- return {type,rarity:r,level:Math.max(1,state.level+Math.floor(Math.random()*3)-1),power:Math.max(1,Math.round(base*rarityMult[r])),name:names[type][Math.min(3,r+Math.floor(Math.random()*2))]};
-}
-function sellValue(i){return Math.max(5,Math.round(i.power*(1+i.rarity*.35)+i.level*3))}
-function totalPower(){return 10+Object.values(state.equipped).reduce((a,b)=>a+b,0)}
-function save(){state.current=current;localStorage.setItem("gear_runner_v03",JSON.stringify(state))}
-function toast(t){const e=document.getElementById("toast");e.textContent=t;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),900)}
-function render(){
- document.getElementById("coinsTop").textContent=state.coins;
- document.getElementById("powerTop").textContent=totalPower();
- document.getElementById("level").textContent=state.level;
- const cost=Math.floor(50*Math.pow(1.35,state.level-1)); document.getElementById("cost").textContent=cost;
- document.getElementById("itemIcon").src=icons[current.type];
- document.getElementById("lootImg").src=icons[current.type];
- document.getElementById("itemType").textContent=slotNames[current.type].toUpperCase()+" · "+rarityNames[current.rarity].toUpperCase();
- document.getElementById("itemName").textContent=current.name;
- document.getElementById("itemPower").textContent="+"+current.power;
- const old=state.equipped[current.type]||0,d=current.power-old;
- document.getElementById("diff").textContent=(d>=0?"+":"")+d+" к текущей силе";
- document.getElementById("diff").style.color=d>=0?"#87e8a5":"#ff9ca8";
- document.getElementById("compare").textContent="Текущий предмет: +"+old+" · Продажа: "+sellValue(current)+" 🪙";
- document.getElementById("card").className="card "+rarityNames[current.rarity].toLowerCase();
- const slots=document.getElementById("slots");slots.innerHTML="";
- types.forEach(t=>{const s=document.createElement("div");s.className="slot";s.innerHTML=`<img src="${icons[t]}"><b>+${state.equipped[t]}</b>`;slots.appendChild(s)});
- save();
-}
-function next(){current=makeItem();render()}
-function sell(){state.coins+=sellValue(current);toast("Продано +"+sellValue(current)+" 🪙");next()}
-function equip(){const old=state.equipped[current.type]||0;if(old>0){state.coins+=Math.max(1,Math.round(old*.65));toast("Старый предмет продан · +"+Math.max(1,Math.round(old*.65))+" 🪙")}state.equipped[current.type]=current.power;next()}
-document.getElementById("sellBtn").onclick=sell;
-document.getElementById("equipBtn").onclick=equip;
-document.getElementById("upgradeBtn").onclick=()=>{const c=Math.floor(50*Math.pow(1.35,state.level-1));if(state.coins<c){toast("Не хватает монет");return}state.coins-=c;state.level++;toast("Уровень повышен!");next()};
-const card=document.getElementById("card");
-card.addEventListener("pointerdown",e=>{startX=e.clientX;dragging=true;card.setPointerCapture(e.pointerId)});
-card.addEventListener("pointermove",e=>{if(!dragging)return;const dx=e.clientX-startX;card.style.transform=`translateX(${dx*.35}px) rotate(${dx*.025}deg)`});
-card.addEventListener("pointerup",e=>{if(!dragging)return;dragging=false;const dx=e.clientX-startX;card.style.transform="";if(Math.abs(dx)>80){card.style.transform=`translateX(${dx>0?110:-110}px) rotate(${dx>0?6:-6}deg)`;setTimeout(()=>dx>0?equip():sell(),100)}});
-render();
+function baseState(){return {level:1,xp:0,coins:150,up:{atk:0,def:0,crit:0},equip:{weapon:null,helmet:null,armor:null,gloves:null,boots:null},bestWave:0,zone:1};}
+function load(){try{return {...baseState(),...JSON.parse(localStorage.getItem(KEY))}}catch(e){return baseState()}}
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function power(){return slots.reduce((s,k)=>s+(state.equip[k]?.power||0),0)+state.up.atk*8+state.level*4}
+function attack(){return Math.round(power()*.45 + state.level*3 + state.up.atk*4)}
+function defense(){return Math.round(power()*.25 + state.up.def*9 + state.level*2)}
+function critChance(){return Math.min(40,5+state.up.crit*3)}
+function xpNeed(){return 100+(state.level-1)*65}
+function rarityFor(){let r=Math.random();if(r<.62)return rarities[0];if(r<.87)return rarities[1];if(r<.975)return rarities[2];return rarities[3]}
+function item(){let slot=slots[Math.floor(Math.random()*slots.length)],r=rarityFor(),lvl=Math.max(1,state.level+Math.floor(Math.random()*3)-1);let base=12+lvl*7;let p=Math.round(base*r.mult*(.78+Math.random()*.45));let names={weapon:["Клинок странника","Грозовой топор","Пыльный серп"],helmet:["Шлем дозорного","Железная маска","Корона пепла"],armor:["Кожаный панцирь","Стальная кираса","Плащ перевала"],gloves:["Боевые перчатки","Рунические рукавицы","Когти охотника"],boots:["Сапоги следопыта","Стальные ботинки","Шаг бури"]};return {id:Date.now()+Math.random(),slot,rarity:r.id,power:p,level:lvl,name:names[slot][Math.floor(Math.random()*names[slot].length)],sell:Math.max(5,Math.round(p*(.42+.08*rarities.find(x=>x.id===r.id).mult)))}}
+function equipItem(it){let old=state.equip[it.slot];let refund=old?Math.max(5,Math.round(old.power*.5)):0;state.equip[it.slot]=it;state.coins+=refund;save();toast(old?`Новый предмет надет. Старый продан за ${refund}💰`:"Предмет экипирован");renderHome();renderStats()}
+function sellItem(it){state.coins+=it.sell;save();toast(`Продано за ${it.sell}💰`);renderHome();renderStats()}
+function showLoot(it){run.loot=it;const old=state.equip[it.slot];$("#lootName").textContent=it.name;$("#lootSlot").textContent=slotInfo[it.slot].name;$("#lootVisual").textContent=slotInfo[it.slot].icon;let rr=rarities.find(r=>r.id===it.rarity);$("#lootRarity").textContent=rr.name;$("#lootRarity").className="rarity "+rr.cls;$("#lootLevel").textContent=`Уровень ${it.level}`;$("#lootPower").textContent=it.power;$("#compareBox").innerHTML=old?`Сейчас: <b>${old.power}</b> силы → новый: <b>${it.power}</b> · <b style="color:${it.power>=old.power?'#63e6a7':'#ff7888'}">${it.power-old.power>=0?'+':''}${it.power-old.power}</b>`:`В слоте пока пусто. Новый предмет даст <b>+${it.power}</b> силы.`;$("#lootOverlay").classList.add("show");}
+function closeLoot(){run.loot=null;$("#lootOverlay").classList.remove("show")}
+function nextEnemy(){let z=state.zone;let idx=Math.min(enemies.length-1,Math.floor((run.wave-1)/3)+(z-1));let e=enemies[idx];run.enemyIndex=idx;let mult=1+run.wave*.13+(z-1)*.35;run.enemyMax=Math.round(e[1]*80*mult);run.enemyHp=run.enemyMax;$("#enemyName").textContent=e[0];$("#enemyLabel").textContent=e[0];$("#waveText").textContent=`Волна ${run.wave} · ${Math.min(5,((run.wave-1)%5)+1)}/5`;updateRunUI()}
+function startRun(){run.active=true;run.wave=Math.max(1,state.bestWave?Math.min(state.bestWave,20):1);run.playerHp=100;run.busy=false;show("run");nextEnemy();toast("Забег начался")}
+function damageFloat(x,y,text,good=false){let el=document.createElement("div");el.className="float";el.textContent=text;el.style.left=x+"px";el.style.top=y+"px";if(good)el.style.color="#65e6a5";$("#scene").appendChild(el);setTimeout(()=>el.remove(),800)}
+function doAttack(){if(!run.active||run.busy)return;run.busy=true;let crit=Math.random()*100<critChance();let dmg=Math.max(1,Math.round(attack()*(.82+Math.random()*.4)*(crit?1.8:1)));run.enemyHp=Math.max(0,run.enemyHp-dmg);$("#enemy").classList.add("hit");setTimeout(()=>$("#enemy").classList.remove("hit"),180);damageFloat(62,80,(crit?"CRIT ":"-")+dmg);updateRunUI();if(run.enemyHp<=0){setTimeout(killEnemy,260);return}setTimeout(()=>{let incoming=Math.max(1,Math.round((8+run.enemyIndex*4+run.wave*1.7)-defense()*.06));run.playerHp=Math.max(0,run.playerHp-incoming);damageFloat(210,70,"-"+incoming);$("#actor").classList.add("hit");setTimeout(()=>$("#actor").classList.remove("hit"),180);updateRunUI();if(run.playerHp<=0){setTimeout(endRun,350)}else run.busy=false},430)}
+function killEnemy(){state.coins+=Math.round(12+run.wave*3+state.level*2);state.xp+=Math.round(28+run.wave*8);if(run.wave>state.bestWave)state.bestWave=run.wave;levelCheck();save();run.busy=false;updateHomeStats();if(run.wave%5===0){toast("Босс повержен! Следующая волна сложнее.")}showLoot(item())}
+function levelCheck(){while(state.xp>=xpNeed()){state.xp-=xpNeed();state.level++;state.coins+=50+state.level*10;toast(`Новый уровень: ${state.level}! +бонус`);if(state.level>=6)state.zone=2;if(state.level>=12)state.zone=3}}
+function endRun(){run.active=false;save();toast(`Забег окончен. Лучший результат: волна ${state.bestWave}`);setTimeout(()=>show("home"),700)}
+function heal(){let c=20+state.level*5;if(state.coins<c||run.playerHp>=100)return;state.coins-=c;run.playerHp=Math.min(100,run.playerHp+35);save();updateRunUI()}
+function buyUpgrade(type){let lvl=state.up[type],cost=Math.round(80*Math.pow(1.55,lvl));if(state.coins<cost){toast("Не хватает монет");return}state.coins-=cost;state.up[type]++;save();renderStats();updateHomeStats();toast("Улучшение куплено")}
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$("#"+id).classList.add("active");if(id==="home")renderHome();if(id==="stats")renderStats()}
+function updateRunUI(){$("#rCoins").textContent=state.coins;$("#rLevel").textContent=state.level;$("#powerRun").textContent=power();$("#playerHpBar").style.width=run.playerHp+"%";$("#enemyHpBar").style.width=Math.max(0,run.enemyHp/run.enemyMax*100)+"%";$("#healCost").textContent=20+state.level*5}
+function renderEquip(id){let root=$("#"+id);root.innerHTML=slots.map(k=>{let it=state.equip[k];return `<div class="slot"><div class="emoji">${slotInfo[k].icon}</div><small>${slotInfo[k].name}</small><b>${it?it.power:"—"}</b></div>`}).join("")}
+function updateHomeStats(){$("#hLevel").textContent=state.level;$("#hPower").textContent=power();$("#hCoins").textContent=state.coins;$("#xpText").textContent=`XP ${state.xp} / ${xpNeed()}`;$("#xpBar").style.width=(state.xp/xpNeed()*100)+"%";let z=zones[state.zone-1];$("#zoneBadge").textContent=`Зона ${state.zone}`;$("#locIcon").textContent=z.icon;$("#locName").textContent=z.name;$("#locDesc").textContent=z.desc}
+function renderHome(){updateHomeStats();renderEquip("homeEquip")}
+function renderStats(){renderHome();$("#sLevel").textContent=state.level;$("#sPower").textContent=power();$("#sAtk").textContent=attack();$("#sDef").textContent=defense();$("#sCrit").textContent=critChance()+"%";let upgrades=[["atk","Атака","Увеличивает урон в бою.","⚔️"],["def","Защита","Снижает входящий урон.","🛡️"],["crit","Критический шанс","Повышает шанс критического удара.","🎯"]];$("#upgradeList").innerHTML=upgrades.map(u=>{let cost=Math.round(80*Math.pow(1.55,state.up[u[0]]));return `<div class="card listItem"><div class="row"><div><b>${u[3]} ${u[1]}</b><div class="muted">${u[2]}</div></div><button class="btn" style="padding:10px 12px" onclick="buyUpgrade('${u[0]}')">${cost}💰</button></div><div class="muted" style="margin-top:7px">Уровень улучшения: ${state.up[u[0]]}</div></div>`}).join("");renderEquip("statsEquip")}
+function toast(t){let e=$("#toast");e.textContent=t;e.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>e.classList.remove("show"),1800)}
+function $(q){return document.querySelector(q)}
+$("#startBtn").onclick=startRun;$("#backBtn").onclick=()=>{run.active=false;show("home")};$("#statsBack").onclick=()=>show("home");$("#attackBtn").onclick=doAttack;$("#healBtn").onclick=heal;
+$("#resetBtn").onclick=()=>{if(confirm("Удалить весь прогресс?")){localStorage.removeItem(KEY);state=baseState();renderHome();toast("Прогресс сброшен")}}
+$("#sellBtn").onclick=()=>{if(run.loot){let it=run.loot;closeLoot();sellItem(it);run.busy=false;run.wave++;nextEnemy()}}
+$("#equipBtn").onclick=()=>{if(run.loot){let it=run.loot;closeLoot();equipItem(it);run.busy=false;run.wave++;nextEnemy()}}
+$("#lootCard").addEventListener("touchstart",e=>{window.swipeX=e.changedTouches[0].clientX},{passive:true});
+$("#lootCard").addEventListener("touchend",e=>{let dx=e.changedTouches[0].clientX-window.swipeX;if(Math.abs(dx)>55){dx>0?$("#equipBtn").click():$("#sellBtn").click()}},{passive:true});
+$("#lootCard").addEventListener("mousedown",e=>window.swipeX=e.clientX);
+$("#lootCard").addEventListener("mouseup",e=>{let dx=e.clientX-window.swipeX;if(Math.abs(dx)>55){dx>0?$("#equipBtn").click():$("#sellBtn").click()}});
+renderHome();
 </script>
 </body>
 </html>
